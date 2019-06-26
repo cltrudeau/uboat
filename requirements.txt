@@ -1,0 +1,10 @@
+# These requirements are for running tests, the library itself only needs a
+# subset, see setup.py for that list
+coverage==4.5.3
+pudb==2019.1
+pyflakes==2.1.1
+Sphinx==2.1.2
+sphinx-rtd-theme==0.4.3
+tox==3.13.1
+twine==1.13.0
+waelstow==0.10.2
