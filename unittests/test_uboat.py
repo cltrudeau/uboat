@@ -1,6 +1,8 @@
 import sys
 from unittest import TestCase
 
+from waelstow import capture_stdout
+
 import uboat
 from uboat import flag
 
@@ -62,6 +64,7 @@ class TestUBoat(TestCase):
 
     def test_badcmd(self):
         # tests a when no command is given
-        with self.assertRaises(SystemExit):
-            sys.argv = ['sample.py']
-            uboat.process_arguments()
+        with capture_stdout():
+            with self.assertRaises(SystemExit):
+                sys.argv = ['sample.py']
+                uboat.process_arguments()

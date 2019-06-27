@@ -109,6 +109,11 @@ def command(*decorator_args, **decorator_kwargs):
         called_with_parms = False
 
     def decorator(method):
+        @wraps(method)
+        def wrapper(*args, **kwargs):
+            return method(*args, **kwargs)
+
+        # register the command with the uboat singleton
         cmd = SubCommand(method.__name__)
 
         if 'name' in decorator_kwargs:
@@ -119,18 +124,13 @@ def command(*decorator_args, **decorator_kwargs):
 
         if called_with_parms:
             # only add the decorator_args if this was called with parameters,
-            # otherwise that variable contains the calling method
+            # otherwise decorator_args contains the calling method
             cmd.flags = decorator_args
 
         cmd.kwargs = decorator_kwargs
-        cmd.func = method
+        cmd.func = wrapper
 
         manager.sub_commands.append(cmd)
-
-        @wraps(method)
-        def wrapper(*args, **kwargs):
-            print('%%%%')
-            return method(*args, **kwargs)
         return wrapper
 
     #if len(decorator_args) == 1 and callable(decorator_args[0]):
