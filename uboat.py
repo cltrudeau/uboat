@@ -129,7 +129,7 @@ def command(*decorator_args, **decorator_kwargs):
 
         @wraps(method)
         def wrapper(*args, **kwargs):
-
+            print('%%%%')
             return method(*args, **kwargs)
         return wrapper
 
