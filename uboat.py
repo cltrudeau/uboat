@@ -29,23 +29,28 @@ class CommandManager:
 
 def flag(name, **kwargs):
     """Function acts like a wrapper for flag parameters that would be used
-    inside of a argparse.add_argument() call"""
+    inside of a ``argparse`` ``add_argument()`` call."""
     return Flag(name, **kwargs)
 
 
 def add_flags(*args):
-    """Registers command line flags with the CommandManager."""
+    """Registers command line flags with the CommandManager. Takes one or more
+    :func:`flag` calls which are wrappers to the ``argparse`` 
+    ``add_argument()`` method."""
     manager.flags.extend(args)
 
 
 def configure(**kwargs):
-    """Registers configuration parameters for the ArgumentParser"""
+    """Registers configuration parameters for the ``ArgumentParser``. All
+    parameters passed to this method are sent through to the 
+    ``ArgumentParser`` constructor."""
     manager.config = kwargs
 
 
 def configure_subparser(**kwargs):
     """Registers configurtion parameters for the subparser created inside the
-    ArgumentParser."""
+    ``ArgumentParser``. All parameters passed to this method are sent through
+    to the ``add_suparsers()`` method on the ``ArgumentParser``."""
     manager.sub_config = kwargs
 
 
@@ -54,6 +59,10 @@ def configure_subparser(**kwargs):
 # -----------------------------------------------------------------------------
 
 def process_arguments():
+    """Method to be called to have the program parse the command line
+    arguments and execute any sub-commands found there.
+    """
+
     # create the parser and subparsers
     parser = argparse.ArgumentParser(**manager.config)
     subparser = parser.add_subparsers(**manager.sub_config)
@@ -97,9 +106,54 @@ def process_arguments():
 # -----------------------------------------------------------------------------
 
 def command(*decorator_args, **decorator_kwargs):
-    """Decorator for registering new sub-commands.
+    """Decorator for registering new sub-commands. 
 
-    Can be called with or without parameters
+    Simplest case is to be called without parameters, registering a
+    sub-command with the name of the function wrapped.
+
+    .. code-block:: python
+
+        @uboat.command
+        def show(args):
+            print('This is the "show" sub-command running')
+
+    Alternatively, parameters can be passed to the decorator. Using a
+    parameter ``name`` will override the method's name as the sub-command. One
+    or more :func:`flag` methods can be passed in to configure flags or
+    arguments for the sub-command. All parameters of the :func:`flag` call are
+    passed through to the ``argparse`` ``add_argument()`` call. Parameters not
+    wrapped in the :func:`flag` method are passed through to the creation of
+    the subparser.
+
+    .. code-block:: python
+
+        @uboat.command(
+            flag('packages', nargs='+', help='List of packages to add'), 
+            name='install', help='Pretends to install something')
+        def install_cmd(args):
+            print('Installing:', ','.join(args.packages))
+            print('Done')
+
+    The above registers a sub-command called "install" (NB: `not`
+    "install_cmd") which takes a parameter with one or more argument stored in
+    "packages". This is the equivalent of the following ``argparse`` code:
+
+    .. code-block:: python
+
+        import argparse
+
+        parser = argparse.ArgumentParser()
+        subparsers = parser.add_subparsers()
+
+        install_parser = subparsers.add_parser('install', 
+            help='Pretends to install something')
+        install_parser.ad_argument('packages', nargs='+', 
+            help='List of packages to add')
+        install_parser.set_defaults(func=install_cmd)
+
+        args = parser.parse_args()
+        args.func(args)
+
     """
     called_with_parms = True
     if len(decorator_args) == 1 and callable(decorator_args[0]):
