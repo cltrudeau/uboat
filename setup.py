@@ -16,9 +16,10 @@ long_description = open(readme).read()
 SETUP_ARGS = dict(
     name='uboat',
     version=version,
-    description=("""Utility for writing command-line python scripts that need 
-sub-commands"""),
+    description=('Utility for writing command-line python scripts that '
+        'need sub-commands'),
     long_description=long_description,
+    long_description_content_type='text/x-rst',
     url='https://github.com/cltrudeau/uboat',
     author='Christopher Trudeau',
     author_email='ctrudeau+pypi@arsensa.com',
