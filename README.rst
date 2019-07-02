@@ -5,6 +5,9 @@ This library helps you write command-line python scripts to use sub commands
 (e.g. "git commit", "git checkout"). It is a thin wrapper around the built-in
 library argparse.
 
+This was written before the author discovered the vastly superior:
+`click <https://click.palletsprojects.com>`_. You should use that instead.
+
 Installation
 ============
 
